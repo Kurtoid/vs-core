@@ -36,14 +36,22 @@ class VSGamePipelineStage @Inject constructor(private val shipWorld: ShipObjectS
     private val physicsFramesQueue: ConcurrentLinkedQueue<VSPhysicsFrame> = ConcurrentLinkedQueue()
     private val dimensionIntIdToString = Int2ObjectOpenHashMap<String>()
 
+    private var lastFrameWarnTime = 0L
+
     /**
      * Push a physics frame to the game stage
      */
     fun pushPhysicsFrame(physicsFrame: VSPhysicsFrame) {
+        val time = System.currentTimeMillis()
         if (physicsFramesQueue.size >= 300) {
             // throw IllegalStateException("Too many physics frames in the physics frame queue. Is the game stage broken?")
-            logger.warn("Too many physics frames in the physics frame queue. Is the game stage broken?")
-            Thread.sleep(1000L)
+            if (time - lastFrameWarnTime > 1000L) {
+                logger.warn("Too many physics frames in the physics frame queue. Is the game stage broken?")
+                lastFrameWarnTime = time
+            }
+        }
+        if (time - lastFrameWarnTime > 1000L) {
+            return
         }
         physicsFramesQueue.add(physicsFrame)
     }

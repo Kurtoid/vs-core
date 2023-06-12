@@ -86,6 +86,8 @@ class VSPhysicsPipelineStage @Inject constructor() {
     var isUsingDummy = false
         private set
 
+    private var lastFrameWarnTime = 0L
+
     init {
         // Try creating the physics engine
         physicsEngine = try {
@@ -108,9 +110,15 @@ class VSPhysicsPipelineStage @Inject constructor() {
      * Push a game frame to the physics engine stage
      */
     fun pushGameFrame(gameFrame: VSGameFrame) {
+        val time = System.currentTimeMillis()
         if (gameFramesQueue.size >= 100) {
-            logger.warn("Too many game frames in the game frame queue. Is the physics stage broken?")
-            Thread.sleep(1000L)
+            if (time - lastFrameWarnTime > 1000L) {
+                logger.warn("Too many game frames in the game frame queue. Is the physics stage broken?")
+                lastFrameWarnTime = time
+            }
+        }
+        if (time - lastFrameWarnTime > 1000L) {
+            return
         }
         gameFramesQueue.add(gameFrame)
     }
