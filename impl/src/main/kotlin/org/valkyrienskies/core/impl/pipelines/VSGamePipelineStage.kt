@@ -50,7 +50,7 @@ class VSGamePipelineStage @Inject constructor(private val shipWorld: ShipObjectS
                 lastFrameWarnTime = time
             }
         }
-        if (time - lastFrameWarnTime > 1000L) {
+        if (time - lastFrameWarnTime < 1000L) {
             return
         }
         physicsFramesQueue.add(physicsFrame)

@@ -117,7 +117,7 @@ class VSPhysicsPipelineStage @Inject constructor() {
                 lastFrameWarnTime = time
             }
         }
-        if (time - lastFrameWarnTime > 1000L) {
+        if (time - lastFrameWarnTime < 1000L) {
             return
         }
         gameFramesQueue.add(gameFrame)
